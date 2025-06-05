@@ -109,7 +109,7 @@ static void init_state(void) {
 		if (!LoRa_Init(&lora))
 			errorCode = 4;
 		if (!microSD_Init())
-			errorCode = 0; // CODE - 5
+			errorCode = errorCode; // CODE - 5
 		if (!W25Qx_Init(&wq))
 			errorCode = 6;
 
