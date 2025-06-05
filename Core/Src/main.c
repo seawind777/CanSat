@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "FSM.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -144,7 +144,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 12;
+  RCC_OscInitStruct.PLL.PLLM = 8;
   RCC_OscInitStruct.PLL.PLLN = 84;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
@@ -376,13 +376,16 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, LED2_Pin|LED1_Pin|GPIO_PIN_15|WQ_NSS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED_ERR_Pin|MS_NSS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_ERR_GPIO_Port, LED_ERR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, RESET_LORA_Pin|LORA_NSS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(MS_NSS_GPIO_Port, MS_NSS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LIS_NSS_GPIO_Port, LIS_NSS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(RESET_LORA_GPIO_Port, RESET_LORA_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, LORA_NSS_Pin|LIS_NSS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : LED2_Pin LED1_Pin PC15 WQ_NSS_Pin */
   GPIO_InitStruct.Pin = LED2_Pin|LED1_Pin|GPIO_PIN_15|WQ_NSS_Pin;
