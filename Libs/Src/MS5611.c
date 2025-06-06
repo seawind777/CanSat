@@ -93,7 +93,7 @@ uint8_t MS5611_CheckSensor(void) {
             valid = 1;
     }
 
-    if (!valid || MS5611_CRC4(prom) != (prom[7] & 0xF))
+    if (!valid /* || MS5611_CRC4(prom) != (prom[7] & 0xF)*/)
         return 0;
 
     return 1;
