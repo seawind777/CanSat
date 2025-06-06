@@ -385,10 +385,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(MS_NSS_GPIO_Port, MS_NSS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(RESET_LORA_GPIO_Port, RESET_LORA_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LORA_NSS_Pin|LIS_NSS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, RESET_LORA_Pin|LORA_NSS_Pin|LIS_NSS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : LED2_Pin LED1_Pin PC15 WQ_NSS_Pin */
   GPIO_InitStruct.Pin = LED2_Pin|LED1_Pin|GPIO_PIN_15|WQ_NSS_Pin;

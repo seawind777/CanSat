@@ -56,19 +56,19 @@ static void init_state(void) {
 	static uint8_t errorCode = 0;
 	if (currentState != lastState) {
 		lastState = currentState;
-		if (!MS5611_Init(&hspi1, MS_NSS_GPIO_Port, MS_NSS_Pin))
+		if (!MS5611_Init(&hspi1, MS_NSS_GPIO_Port, MS_NSS_Pin))		//[V]
 			errorCode = 1;
-		if (!LIS3_Init(&hspi1, LIS_NSS_GPIO_Port, LIS_NSS_Pin))
+		if (!LIS3_Init(&hspi1, LIS_NSS_GPIO_Port, LIS_NSS_Pin))		//[X]
 			errorCode = 2;
-		if (!LSM6_Init(&hi2c1, NULL, (0b1101010 << 1)))
+		if (!LSM6_Init(&hi2c1, NULL, (0b1101010 << 1)))				//[V]
 			errorCode = 3;
-		if (!LoRa_Init(&lora))
+		if (!LoRa_Init(&lora))										//[V]
 			errorCode = 4;
-		if (!microSD_Init())
+		if (!microSD_Init())										//[X]
 			errorCode = 5;
-		if (!W25Qx_Init(&wq))
+		if (!W25Qx_Init(&wq))										//[V]
 			errorCode = 6;
-		if (BN220_Init() != HAL_OK)
+		if (BN220_Init() != HAL_OK)									//[V]
 			errorCode = 7;
 
 		if (!errorCode) {
