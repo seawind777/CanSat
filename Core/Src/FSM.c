@@ -64,7 +64,7 @@ static void init_state(void) {
 			errorCode = 3;
 		if (!LoRa_Init(&lora))										//[V]
 			errorCode = 4;
-		if (!microSD_Init())										//[X]
+		if (!microSD_Init())										//[V]
 			errorCode = 5;
 		if (!W25Qx_Init(&wq))										//[V]
 			errorCode = 6;
