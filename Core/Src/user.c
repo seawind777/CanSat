@@ -36,7 +36,7 @@ void StoreVectAbs(ImuData *dat) {
 void ImuGetAll(ImuData *imuData) {
 	imuData->time = HAL_GetTick();
 	MS5611_Read(&imuData->temp, &imuData->press);
-	LIS3_Read(imuData->magData);
+//	LIS3_Read(imuData->magData);
 	LSM6_Read(imuData->accelData, imuData->gyroData);
 	StoreVectAbs(imuData);
 	imuData->altitude = MS5611_GetAltitude(&imuData->press, &imuData->press0);
