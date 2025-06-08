@@ -70,12 +70,16 @@ static void init_state(void) {
 			errorCode = 6;
 		if (BN220_Init() != HAL_OK)									//[V]
 			errorCode = 7;
+		if (!HAL_GPIO_ReadPin(GPIOA, PHOTO_RES_Pin)){
+			errorCode = 8;
+		}
 
 		if (!errorCode) {
 			MS5611_SetOS(MS56_OSR_4096, MS56_OSR_4096);
 //			LIS3_Config(LIS_CTRL1, LIS_MODE_HP | LIS_ODR_80);
 //			LIS3_Config(LIS_CTRL2, LIS_SCALE_4);
 //			LIS3_Config(LIS_CTRL3, LIS_CYCLIC);
+
 			LSM6_ConfigAG(LSM6_ACCEL_16G | LSM6_CFG_12_5_Hz, LSM6_GYRO_2000DPS | LSM6_CFG_12_5_Hz);
 			CB_Init(&cbPress);
 			GNGGA_Init(&gps_parser, &huart3);
@@ -156,7 +160,7 @@ static void main_state(void) {
 	BN220_TryGet(&gps_parser, &imuData);
 
 	if (HAL_GetTick() - imuData.time >= DATA_PERIOD) {
-		HAL_ADC_Start(&hadc1);
+//		HAL_ADC_Start(&hadc1);
 		ImuGetAll(&imuData);
 
 		if (imuData.altitude > START_TH)

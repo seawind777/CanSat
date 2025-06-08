@@ -68,6 +68,8 @@ void Error_Handler(void);
 #define WQ_NSS_GPIO_Port GPIOC
 #define MS_NSS_Pin GPIO_PIN_9
 #define MS_NSS_GPIO_Port GPIOA
+#define PHOTO_RES_Pin GPIO_PIN_15
+#define PHOTO_RES_GPIO_Port GPIOA
 #define RESET_LORA_Pin GPIO_PIN_4
 #define RESET_LORA_GPIO_Port GPIOB
 #define SDIO_Detect_Pin GPIO_PIN_5

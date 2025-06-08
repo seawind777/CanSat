@@ -21,7 +21,7 @@
 #include "GNGGA_Parser.h"
 #include <math.h>
 
-extern ADC_HandleTypeDef hadc1;
+//extern ADC_HandleTypeDef hadc1;
 extern I2C_HandleTypeDef hi2c1;
 extern SD_HandleTypeDef hsd;
 extern SPI_HandleTypeDef hspi1;
