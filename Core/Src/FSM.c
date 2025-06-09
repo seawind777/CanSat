@@ -58,8 +58,8 @@ static void init_state(void) {
 		lastState = currentState;
 		if (!MS5611_Init(&hspi1, MS_NSS_GPIO_Port, MS_NSS_Pin))		//[V]
 			errorCode = 1;
-//		if (!LIS3_Init(&hspi1, LIS_NSS_GPIO_Port, LIS_NSS_Pin))		//[X]
-//			errorCode = 2;
+		if (!LIS3_Init(&hspi1, LIS_NSS_GPIO_Port, LIS_NSS_Pin))		//TODO: Calibrate me!!!
+			errorCode = 2;
 		if (!LSM6_Init(&hi2c1, NULL, (0b1101010 << 1)))				//[V]
 			errorCode = 3;
 		if (!LoRa_Init(&lora))										//[V]
@@ -68,7 +68,7 @@ static void init_state(void) {
 			errorCode = 5;
 		if (!W25Qx_Init(&wq))										//[V]
 			errorCode = 6;
-		if (BN220_Init() != HAL_OK)									//[V]
+		if (BN220_Init() != HAL_OK)									//FIXME: Set up bn880 module for GNGGA
 			errorCode = 7;
 		if (!HAL_GPIO_ReadPin(GPIOA, PHOTO_RES_Pin)){
 			errorCode = 8;
@@ -76,9 +76,9 @@ static void init_state(void) {
 
 		if (!errorCode) {
 			MS5611_SetOS(MS56_OSR_4096, MS56_OSR_4096);
-//			LIS3_Config(LIS_CTRL1, LIS_MODE_HP | LIS_ODR_80);
-//			LIS3_Config(LIS_CTRL2, LIS_SCALE_4);
-//			LIS3_Config(LIS_CTRL3, LIS_CYCLIC);
+			LIS3_Config(LIS_CTRL1, LIS_MODE_HP | LIS_ODR_80);
+			LIS3_Config(LIS_CTRL2, LIS_SCALE_4);
+			LIS3_Config(LIS_CTRL3, LIS_CYCLIC);
 
 			LSM6_ConfigAG(LSM6_ACCEL_16G | LSM6_CFG_12_5_Hz, LSM6_GYRO_2000DPS | LSM6_CFG_12_5_Hz);
 			CB_Init(&cbPress);
