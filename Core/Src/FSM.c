@@ -19,7 +19,9 @@ enum states {
 
 static enum states lastState = LANDING;
 static enum states currentState = INIT;
-ImuData imuData;
+TelemetryRaw imuData;
+TelemetryPacket txPack;
+ControlCommand rxCmd;
 
 static CircularBuffer cbPress = { .item_size = sizeof(imuData.press), .size = PRESS_BUFFER_LEN };
 
@@ -70,7 +72,7 @@ static void init_state(void) {
 			errorCode = 6;
 		if (BN220_Init() != HAL_OK)									//FIXME: Set up bn880 module for GNGGA
 			errorCode = 7;
-		if (!HAL_GPIO_ReadPin(GPIOA, PHOTO_RES_Pin)){
+		if (!HAL_GPIO_ReadPin(GPIOA, PHOTO_RES_Pin)) {
 			errorCode = 8;
 		}
 
@@ -94,7 +96,7 @@ static void init_state(void) {
 /**
  * @brief Handle LoRa waiting state
  */
-static void lora_wait_state(void) {
+static void lora_wait_state(void) { // TODO: Unify with rxCmd structure
 	static uint8_t rxbuf[1];
 	static uint8_t pingFlag = 0;
 	uint8_t rxLen = 0;
@@ -175,7 +177,7 @@ static void main_state(void) {
 				currentState = LANDING;
 			}
 		}
-		ImuSaveAll(&imuData, &lora, &wq);
+		ImuSaveAll(&imuData, &txPack, &lora, &wq);
 	}
 }
 
@@ -192,7 +194,7 @@ static void landing_state(void) {
 
 	if (HAL_GetTick() - imuData.time >= DATA_PERIOD_LND) {
 		ImuGetAll(&imuData);
-		ImuSaveAll(&imuData, &lora, &wq);
+		ImuSaveAll(&imuData, &txPack, &lora, &wq);
 	}
 }
 
@@ -204,15 +206,15 @@ static void dump_state(void) {
 		lastState = currentState;
 	}
 
-	uint8_t buf[FRAME_SIZE];
-	for (uint32_t addr = 0; addr < 0xFFFFFF; addr += FRAME_SIZE) {
+	uint8_t buf[sizeof(TelemetryPacket)];
+	for (uint32_t addr = 0; addr < 0xFFFFFF; addr += sizeof(TelemetryPacket)) {
 		FlashLED(LED2_Pin);
-		W25Qx_ReadData(&wq, addr, buf, FRAME_SIZE);
+		W25Qx_ReadData(&wq, addr, buf, sizeof(TelemetryPacket));
 		if (buf[0] == 0xFF && buf[1] == 0xFF && buf[2] == 0xFF && buf[3] == 0xFF)
 			break;
-		LoRa_Transmit(&lora, buf, FRAME_SIZE);
+		LoRa_Transmit(&lora, buf, sizeof(TelemetryPacket));
 		FlashLED(LED1_Pin);
-		if (microSD_Write(buf, FRAME_SIZE, SD_FILENAME_WQ) != FR_OK) {
+		if (microSD_Write(buf, sizeof(TelemetryPacket), SD_FILENAME_WQ) != FR_OK) {
 			FlashLED(LED_ERR_Pin);
 			HAL_Delay(1000);
 		}
