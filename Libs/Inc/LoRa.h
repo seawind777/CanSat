@@ -123,6 +123,12 @@ void LoRa_SetConfig(LoRa_HandleTypeDef *handle, LoRaConfig *config);
 void LoRa_Transmit(LoRa_HandleTypeDef *handle, void *data, uint8_t len);
 
 /**
+ * @brief Returns available bytes (LoRa_Receive)
+ * @return uint8_t current RX available
+ */
+uint8_t LoRa_Available(LoRa_HandleTypeDef *handle);
+
+/**
  * @brief Receives data via LoRa
  * @param handle Pointer to LoRa handle structure
  * @param rxData Pointer to receive data buffer
@@ -130,3 +136,12 @@ void LoRa_Transmit(LoRa_HandleTypeDef *handle, void *data, uint8_t len);
  * @return uint8_t Reception status (0 = success, non-zero = error)
  */
 uint8_t LoRa_Receive(LoRa_HandleTypeDef *handle, void *rxData, uint8_t *len);
+
+/**
+ * @brief Receives data via LoRa
+ * @param handle Pointer to LoRa handle structure
+ * @param rxData Pointer to receive data buffer
+ * @param N force receive N bytes
+ * @return uint8_t Reception status (0 = success, non-zero = error)
+ */
+uint8_t LoRa_ReceiveN(LoRa_HandleTypeDef *handle, void *rxData, uint8_t N);

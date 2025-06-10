@@ -69,6 +69,10 @@ void LoRa_Transmit(LoRa_HandleTypeDef *handle, void *data, uint8_t len) {
     LoRa_WriteRegByte(handle, LORA_RegOpMode, 0x05); // RxCont
 }
 
+uint8_t LoRa_Available(LoRa_HandleTypeDef *handle){
+	return LoRa_ReadRegByte(handle, LORA_RegRxNbBytes);
+}
+
 uint8_t LoRa_Receive(LoRa_HandleTypeDef *handle, void *rxData, uint8_t *len) {
     if (!(LoRa_ReadRegByte(handle, LORA_RegIrqFlags) & LORA_Flag_RxDone)) return 0;
 
@@ -78,6 +82,16 @@ uint8_t LoRa_Receive(LoRa_HandleTypeDef *handle, void *rxData, uint8_t *len) {
     *len = LoRa_ReadRegByte(handle, LORA_RegRxNbBytes);
     LoRa_ReadReg(handle, LORA_Fifo, rxData, *len);
     LoRa_WriteRegByte(handle, LORA_RegIrqFlags, LORA_Flag_RxDone);
+    return 1;
+}
+
+uint8_t LoRa_ReceiveN(LoRa_HandleTypeDef *handle, void *rxData, uint8_t N) {
+    if (!(LoRa_ReadRegByte(handle, LORA_RegIrqFlags) & LORA_Flag_RxDone)) return 0;
+
+    uint8_t currentAdr = LoRa_ReadRegByte(handle, LORA_RegFifoRxCurrentAdr);
+    LoRa_WriteRegByte(handle, LORA_RegFifoAddrSpi, currentAdr);
+
+    LoRa_ReadReg(handle, LORA_Fifo, rxData, N);
     return 1;
 }
 

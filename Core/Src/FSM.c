@@ -7,7 +7,7 @@
 #include "user.h"
 #include "GNGGA_Parser.h"
 #include <math.h>
-
+#include "motor_control.h"
 /** @brief System states */
 enum states {
 	INIT,       ///< Initialization state
@@ -66,15 +66,12 @@ static void init_state(void) {
 			errorCode = 3;
 		if (!LoRa_Init(&lora))										//[V]
 			errorCode = 4;
-		if (!microSD_Init())										//[V]
-			errorCode = 5;
+//		if (!microSD_Init())										//[V]
+//			errorCode = 5;
 		if (!W25Qx_Init(&wq))										//[V]
 			errorCode = 6;
 		if (BN220_Init() != HAL_OK)									//FIXME: Set up bn880 module for GNGGA
 			errorCode = 7;
-		if (!HAL_GPIO_ReadPin(GPIOA, PHOTO_RES_Pin)) {
-			errorCode = 8;
-		}
 
 		if (!errorCode) {
 			MS5611_SetOS(MS56_OSR_4096, MS56_OSR_4096);
@@ -148,6 +145,9 @@ static void lora_wait_state(void) { // TODO: Unify with rxCmd structure
  * @brief Handle main flight state
  */
 static void main_state(void) {
+	static uint8_t rxbuf[sizeof(ControlCommand)];
+	uint8_t rxLen = 0;
+
 	if (currentState != lastState) {
 		lastState = currentState;
 		for (uint8_t i = 0; i < 10; i++) {
@@ -178,6 +178,14 @@ static void main_state(void) {
 			}
 		}
 		ImuSaveAll(&imuData, &txPack, &lora, &wq);
+	}
+
+	if(LoRa_Available(&lora) == sizeof(ControlCommand)){ //FIXME: Sync CMD, Check CMD rx after EJECT
+		LoRa_ReceiveN(&lora, &rxCmd, 1);
+		if(rxCmd.reserved == 0xFA){
+			LoRa_Receive(&lora, &rxCmd, &rxLen);
+			MOT_ParseCmdManual(rxbuf);
+		}
 	}
 }
 

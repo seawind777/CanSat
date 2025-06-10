@@ -31,15 +31,15 @@ void ImuGetAll(TelemetryRaw *imuData) {
 void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_HandleTypeDef *lora, W25Qx_Device *wq) {
 	Telemetry_convertRawToPacket(imuData, tx);
 	FlashLED(LED2_Pin);
-	LoRa_Transmit(lora, tx, sizeof(tx));
-	W25Qx_WriteData(wq, imuData->wqAdr, tx, sizeof(tx));
-	imuData->wqAdr += sizeof(tx);
+	W25Qx_WriteData(wq, imuData->wqAdr, tx, sizeof(TelemetryPacket));
+	imuData->wqAdr += sizeof(TelemetryPacket);
 	FlashLED(LED1_Pin);
-	if (microSD_Write(tx, sizeof(tx), SD_FILENAME) != FR_OK) {
+	if (microSD_Write(tx, sizeof(TelemetryPacket), SD_FILENAME) != FR_OK) {
 		FlashLED(LED_ERR_Pin);
 		MX_FATFS_Init();
 		microSD_Init();
 	}
+	LoRa_Transmit(lora, tx, sizeof(TelemetryPacket));
 	FlashLED(0);
 }
 

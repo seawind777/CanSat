@@ -54,10 +54,10 @@ typedef struct __attribute__((packed)) {
  * @brief Control command structure for LoRa control.
  */
 typedef struct __attribute__((packed)) {
+	uint8_t reserved :5;
 	uint8_t mode :1;			///< 0 = auto, 1 = manual
 	uint8_t deploy :1;		///< Deploy command
 	uint8_t eject :1;			///< Eject command
-	uint8_t reserved :5;
 	union {
 		struct {
 			int8_t motor[6];	///< Manual motor values (−60…+90)
