@@ -30,7 +30,7 @@
 //
 //	Adjustable address 0x80 - 0xFE
 //
-#define PCA9685_ADDRESS 0x40
+#define PCA9685_ADDRESS 0x80
 
 //
 //	Registers
