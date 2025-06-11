@@ -111,7 +111,7 @@ void StoreVectAbs(TelemetryRaw *dat);
  * @param lora Pointer to LoRa device
  * @param wq Pointer to W25Qx flash
  */
-void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_HandleTypeDef* lora, W25Qx_Device* wq);
+void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_Handle_t* lora, W25Qx_Device* wq);
 
 /**
  * @brief Retrieve complete IMU dataset from storage

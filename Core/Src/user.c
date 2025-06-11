@@ -28,7 +28,7 @@ void ImuGetAll(TelemetryRaw *imuData) {
 	imuData->altitude = MS5611_GetAltitude(&imuData->press, &imuData->press0);
 }
 
-void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_HandleTypeDef *lora, W25Qx_Device *wq) {
+void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_Handle_t *lora, W25Qx_Device *wq) {
 	Telemetry_convertRawToPacket(imuData, tx);
 	FlashLED(LED2_Pin);
 	W25Qx_WriteData(wq, imuData->wqAdr, tx, sizeof(TelemetryPacket));

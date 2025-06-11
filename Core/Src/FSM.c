@@ -29,7 +29,7 @@ GNGGA_Parser gps_parser;
 
 //@formatter:off
 /** @brief LoRa config*/
-static LoRaConfig loraCfg = {
+static LoRa_Config_t loraCfg = {
 		.frequency = 433,
 		.bandwidth = 0x08,
 		.spreadingFactor = 7,
@@ -46,7 +46,7 @@ static LoRaConfig loraCfg = {
 //@formatter:on
 
 /** @brief LoRa struct */
-static LoRa_HandleTypeDef lora = { .spi = &hspi1, .NSS_Port = LORA_NSS_GPIO_Port, .NSS_Pin = LORA_NSS_Pin, };
+static LoRa_Handle_t lora = { .spi = &hspi1, .nssPort = LORA_NSS_GPIO_Port, .nssPin = LORA_NSS_Pin, };
 
 /** @brief W25Q128 struct */
 static W25Qx_Device wq = { .spi = &hspi1, .cs_port = WQ_NSS_GPIO_Port, .cs_pin = WQ_NSS_Pin, .capacity = 16777216 };
@@ -180,8 +180,7 @@ static void main_state(void) {
 		ImuSaveAll(&imuData, &txPack, &lora, &wq);
 	}
 
-	if(LoRa_Available(&lora) == sizeof(ControlCommand)){ //FIXME: Sync CMD, Check CMD rx after EJECT
-		LoRa_ReceiveN(&lora, &rxCmd, 1);
+	if(LoRa_Receive(&lora, &rxCmd, &rxLen)){ //FIXME: Sync CMD, Check CMD rx after EJECT
 		if(rxCmd.reserved == 0xFA){
 			LoRa_Receive(&lora, &rxCmd, &rxLen);
 			MOT_ParseCmdManual(rxbuf);
