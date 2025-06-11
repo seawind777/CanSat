@@ -5,16 +5,29 @@
  *      Author: Sergey
  */
 #include "motor_control.h"
-#include "telemetry_lora.h"
 
 static ControlCommand cmd;
 
-void MOT_ParseCmdManual(uint8_t *rx){
- cmd = *((ControlCommand*) rx);
- if(cmd.reserved == 0x0F){
-	 cmd.reserved = 0x0F;
-	 cmd.payload.manual.motor[0]; //Angle for MOT0
-	 //TODO: handle new manual command
+void MOT_ParseCmd(ControlCommand *rx){
+	static uint32_t cnt = 0;
+ cmd = *rx;
+ if(cmd.mode == 1){ //Manual
+	 if(cmd.reserved != 0x0F)
+		 cmd.reserved = 0x0F; //Placeholder, Error
+	 else{
+		 //TODO: handle new manual command
+		 //cmd.payload.manual.motor[0]
+	 }
  }
-}
+ else { //Auto
+	 if(cmd.reserved != 0x0F)
+		 cmd.reserved = 0x0F; //Placeholder, Error
+	 else{
+		 //TODO: handle new Auto command
+		 //cmd.payload.auto_.pitch;
+		 //cmd.payload.auto_.yaw;
+	 }
+ }
+ cnt++;
 
+}

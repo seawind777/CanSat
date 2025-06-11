@@ -69,8 +69,8 @@ static void init_state(void) {
 			errorCode = 3;
 		if (!LoRa_Init(&lora))										//[V]
 			errorCode = 4;
-		if (!microSD_Init())										//[V]
-			errorCode = 5;
+//		if (!microSD_Init())										//[V]
+//			errorCode = 5;
  		if (!W25Qx_Init(&wq))										//[V]
 			errorCode = 6;
 		if (BN220_Init() != HAL_OK)									//FIXME: Set up bn880 module for GNGGA
@@ -157,9 +157,9 @@ static void lora_wait_state(void) { // TODO: Unify with rxCmd structure
  * @brief Handle main flight state
  */
 static void main_state(void) {
-	static uint8_t rxbuf[sizeof(ControlCommand)];
 	uint8_t rxLen = 0;
-
+	static uint32_t rx_delay_millis = 0;
+	static uint8_t need_rx_flag = 0;
 	if (currentState != lastState) {
 		lastState = currentState;
 		for (uint8_t i = 0; i < 10; i++) {
@@ -189,13 +189,23 @@ static void main_state(void) {
 				currentState = LANDING;
 			}
 		}
+
+		/* Save & transmit all */
 		ImuSaveAll(&imuData, &txPack, &lora, &wq);
+
+		/* Set up RX timer */
+		rx_delay_millis = HAL_GetTick();
+		need_rx_flag = 1;
+
 	}
 
-	if(LoRa_Receive(&lora, &rxCmd, &rxLen)){ //FIXME: Sync CMD, Check CMD rx after EJECT
-		if(rxCmd.reserved == 0xFA){
-			LoRa_Receive(&lora, &rxCmd, &rxLen);
-			MOT_ParseCmdManual(rxbuf);
+	//TODO: Something
+
+	/* Wait for RX cmd */
+	if (need_rx_flag && (HAL_GetTick() - rx_delay_millis >= 35)) { //FIXME: Get rid of delay
+		need_rx_flag = 0;
+		if(LoRa_Receive(&lora, &rxCmd, &rxLen)){ //FIXME: Check CMD rx after EJECT
+			MOT_ParseCmd(&rxCmd); //Calculated On-Air ~15ms
 		}
 	}
 }

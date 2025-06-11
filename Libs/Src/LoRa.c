@@ -51,41 +51,26 @@ uint8_t LoRa_Init(LoRa_Handle_t *handle) {
  * @param config Pointer to configuration structure
  */
 void LoRa_SetConfig(LoRa_Handle_t *handle, LoRa_Config_t *config) {
-    /* Set standby mode */
-    LoRa_writeRegByte(handle, LORA_REG_OP_MODE, 0x80);
+    LoRa_writeRegByte(handle, LORA_REG_OP_MODE, 0b10000000); // Standby mode
     handle->config = *config;
 
-    /* Calculate frequency and preamble length values */
-    uint32_t frequency = config->frequency * 16384;
-    uint16_t preambleLength = config->preambleLength;
+	uint32_t Fr = config->frequency * 16384, PrL = config->preambleLength;
+	Fr = ((Fr << 16) & 0xFF0000) | ((Fr << 0) & 0x00FF00) | ((Fr >> 16) & 0x0000FF);
+	PrL = ((PrL << 8) & 0xFF00) | ((PrL >> 8) & 0x00FF);
 
-    /* Format frequency value for registers */
-    frequency = ((frequency << 16) & 0xFF0000) |
-                ((frequency << 0) & 0x00FF00) |
-                ((frequency >> 16) & 0x0000FF);
-
-    /* Format preamble length for registers */
-    preambleLength = ((preambleLength << 8) & 0xFF00) |
-                    ((preambleLength >> 8) & 0x00FF);
-
-    /* Configure all registers */
-    LoRa_writeReg(handle, LORA_REG_FR_MSB, (uint8_t*)&frequency, 3);
-    LoRa_writeRegByte(handle, LORA_REG_MODEM_CONFIG_1,
-                     (config->bandwidth << 4) |
-                     (config->codingRate << 1) |
-                     config->headerMode);
-    LoRa_writeRegByte(handle, LORA_REG_MODEM_CONFIG_2,
-                     (config->spreadingFactor << 4) |
-                     (config->crcEnabled << 2));
-    LoRa_writeRegByte(handle, LORA_REG_MODEM_CONFIG_3, config->lowDataRateOptimize << 3);
-    LoRa_writeReg(handle, LORA_REG_PREAMBLE_MSB, (uint8_t*)&preambleLength, 2);
-    LoRa_writeRegByte(handle, LORA_REG_PAYLOAD_LENGTH, config->payloadLength);
-    LoRa_writeRegByte(handle, LORA_REG_PAYLOAD_MAX_LENGTH, config->payloadLength);
-    LoRa_writeRegByte(handle, LORA_REG_LNA, 0x23);  /* Default LNA configuration */
-    LoRa_writeRegByte(handle, LORA_REG_PA_CONFIG, 0x80 | (0x07 << 4) | config->txPower);
-    LoRa_writeRegByte(handle, LORA_REG_FIFO_TX_BASE_ADDR, config->txAddr);
-    LoRa_writeRegByte(handle, LORA_REG_FIFO_RX_BASE_ADDR, config->rxAddr);
-    LoRa_writeRegByte(handle, LORA_REG_OP_MODE, 0x89);  /* LoRa mode + RX continuous */
+	LoRa_writeReg(handle, LORA_REG_FR_MSB, (uint8_t*) &Fr, 3);
+	LoRa_writeRegByte(handle, LORA_REG_MODEM_CONFIG_1, (config->bandwidth << 4) | (config->codingRate << 1) | config->headerMode);
+	LoRa_writeRegByte(handle, LORA_REG_MODEM_CONFIG_2, (uint8_t) (config->spreadingFactor << 4) | (config->crcEnabled << 2));
+	LoRa_writeRegByte(handle, LORA_REG_MODEM_CONFIG_3, config->lowDataRateOptimize << 3);
+	LoRa_writeReg(handle, LORA_REG_PREAMBLE_MSB, (uint8_t*) &PrL, 2);
+	LoRa_writeRegByte(handle, LORA_REG_PAYLOAD_LENGTH, config->payloadLength);
+	LoRa_writeRegByte(handle, LORA_REG_PAYLOAD_MAX_LENGTH, config->payloadLength);
+	LoRa_writeRegByte(handle, LORA_REG_LNA, (0x01 << 5) | 0x03);
+	LoRa_writeRegByte(handle, LORA_REG_PA_CONFIG, (1 << 7) | (0x07 << 4) | config->txPower);
+	LoRa_writeRegByte(handle, LORA_REG_FIFO_TX_BASE_ADDR, config->txAddr);
+	LoRa_writeRegByte(handle, LORA_REG_FIFO_RX_BASE_ADDR, config->rxAddr);
+	LoRa_writeRegByte(handle, LORA_REG_OP_MODE, 0b10000001 | (1 << 3));
+	LoRa_writeRegByte(handle, LORA_REG_OP_MODE, 0x05);
 }
 
 /**

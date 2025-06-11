@@ -30,6 +30,7 @@ void ImuGetAll(TelemetryRaw *imuData) {
 
 void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_Handle_t *lora, W25Qx_Device *wq) {
 	Telemetry_convertRawToPacket(imuData, tx);
+	LoRa_Transmit(lora, tx, sizeof(TelemetryPacket));
 	FlashLED(LED2_Pin);
 	W25Qx_WriteData(wq, imuData->wqAdr, tx, sizeof(TelemetryPacket));
 	imuData->wqAdr += sizeof(TelemetryPacket);
@@ -39,7 +40,6 @@ void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_Handle_t *lora,
 		MX_FATFS_Init();
 		microSD_Init();
 	}
-	LoRa_Transmit(lora, tx, sizeof(TelemetryPacket));
 	FlashLED(0);
 }
 

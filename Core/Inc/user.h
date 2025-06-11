@@ -41,7 +41,7 @@ extern UART_HandleTypeDef huart3;
 #define TEAM_NAME "SHARAGA_FOREVER!"     ///< Team identifier for logging and comms
 #define SD_FILENAME "gg.wp"              ///< Primary microSD filename for waypoint data (BIN format)
 #define SD_FILENAME_WQ "gg.wq"           ///< microSD dump filename for diagnostics (BIN format)
-#define DATA_PERIOD 85                   ///< Main data update period in milliseconds
+#define DATA_PERIOD 100                   ///< Main data update period in milliseconds
 #define DATA_PERIOD_LND 85               ///< Post-landing data update period in milliseconds
 #define PRESS_BUFFER_LEN 15              ///< Circular buffer size for landing detection
 #define PRESS_LAND_DELTA 10              ///< Max pressure variation for landing detection (Pa)
