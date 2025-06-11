@@ -101,7 +101,7 @@ PCA9685_STATUS PCA9685_SetPwmFrequency(uint16_t Frequency)
 	PCA9685_SleepMode(0);
 	PCA9685_RestartMode(1);
 	return PCA9685_OK;
-}
+  }
 
 PCA9685_STATUS PCA9685_SetPwm(uint8_t Channel, uint16_t OnTime, uint16_t OffTime)
 {

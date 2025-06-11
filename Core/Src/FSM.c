@@ -8,6 +8,7 @@
 #include "GNGGA_Parser.h"
 #include <math.h>
 #include "motor_control.h"
+#include "pca9685.h"
 /** @brief System states */
 enum states {
 	INIT,       ///< Initialization state
@@ -43,6 +44,8 @@ static LoRa_Config_t loraCfg = {
 		.rxAddr = 0,
 		.txPower = 0x01
 };
+
+
 //@formatter:on
 
 /** @brief LoRa struct */
@@ -66,18 +69,27 @@ static void init_state(void) {
 			errorCode = 3;
 		if (!LoRa_Init(&lora))										//[V]
 			errorCode = 4;
-//		if (!microSD_Init())										//[V]
-//			errorCode = 5;
-		if (!W25Qx_Init(&wq))										//[V]
+		if (!microSD_Init())										//[V]
+			errorCode = 5;
+ 		if (!W25Qx_Init(&wq))										//[V]
 			errorCode = 6;
 		if (BN220_Init() != HAL_OK)									//FIXME: Set up bn880 module for GNGGA
 			errorCode = 7;
+		if (PCA9685_Init(&hi2c1)){
+			errorCode = 8;
+		}
 
 		if (!errorCode) {
 			MS5611_SetOS(MS56_OSR_4096, MS56_OSR_4096);
 			LIS3_Config(LIS_CTRL1, LIS_MODE_HP | LIS_ODR_80);
 			LIS3_Config(LIS_CTRL2, LIS_SCALE_4);
 			LIS3_Config(LIS_CTRL3, LIS_CYCLIC);
+
+			PCA9685_SetPwmFrequency(100000);
+			PCA9685_SetPwm(0, 1000,0);
+			PCA9685_SetPwm(1, 0,4096);
+			PCA9685_SetPwm(3, 4096,0);
+			PCA9685_SetPwm(2, 0,4096);
 
 			LSM6_ConfigAG(LSM6_ACCEL_16G | LSM6_CFG_12_5_Hz, LSM6_GYRO_2000DPS | LSM6_CFG_12_5_Hz);
 			CB_Init(&cbPress);
