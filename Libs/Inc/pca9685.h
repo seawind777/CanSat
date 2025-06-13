@@ -80,6 +80,7 @@ PCA9685_STATUS PCA9685_AutoIncrement(uint8_t Enable);
 PCA9685_STATUS PCA9685_SetPwmFrequency(uint16_t Frequency);
 #endif
 
+PCA9685_STATUS PCA9685_SetPwmFrequency(uint16_t Frequency);
 PCA9685_STATUS PCA9685_SetPwm(uint8_t Channel, uint16_t OnTime, uint16_t OffTime);
 PCA9685_STATUS PCA9685_SetPin(uint8_t Channel, uint16_t Value, uint8_t Invert);
 #ifdef PCA9685_SERVO_MODE

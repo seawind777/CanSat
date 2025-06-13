@@ -84,8 +84,9 @@ static void init_state(void) {
 			LIS3_Config(LIS_CTRL1, LIS_MODE_HP | LIS_ODR_80);
 			LIS3_Config(LIS_CTRL2, LIS_SCALE_4);
 			LIS3_Config(LIS_CTRL3, LIS_CYCLIC);
+			LoRa_EnableDIO0Interrupt(&lora, 0); //Enable RX_Done Interrupt
 
-			PCA9685_SetPwmFrequency(100000);
+			PCA9685_SetPwmFrequency(10000U);
 			PCA9685_SetPwm(0, 1000,0);
 			PCA9685_SetPwm(1, 0,4096);
 			PCA9685_SetPwm(3, 4096,0);

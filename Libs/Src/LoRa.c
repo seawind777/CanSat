@@ -2,8 +2,8 @@
  * @file LoRa.c
  * @brief LoRa module driver implementation
  * @author Nate Hunter
- * @date 2025-06-11
- * @version 1.2
+ * @date 2025-06-13
+ * @version 1.3
  */
 
 #include "LoRa.h"
@@ -199,3 +199,27 @@ static inline void LoRa_readReg(LoRa_Handle_t *handle, LoRa_Register_t reg, uint
     HAL_SPI_Receive(handle->spi, data, count, 1000);
     handle->nssPort->ODR |= handle->nssPin;
 }
+
+/**
+ * @brief Enable DIO0 interrupt with given mapping.
+ * @param handle Pointer to LoRa handle structure
+ * @param irqMapping Value to set in RegDioMapping1 (bits 7-6)
+ */
+void LoRa_EnableDIO0Interrupt(LoRa_Handle_t *handle, uint8_t irqMapping) {
+    // Set DIO0 mapping (RegDioMapping1 bits 7-6)
+    uint8_t reg = LoRa_readRegByte(handle, 0x40); // RegDioMapping1
+    reg &= ~(0xC0); // Clear bits 7 and 6
+    reg |= (irqMapping << 6);
+    LoRa_writeRegByte(handle, 0x40, reg);
+}
+
+/**
+ * @brief Disable DIO0 interrupt (set to unused state)
+ * @param handle Pointer to LoRa handle structure
+ */
+void LoRa_DisableDIO0Interrupt(LoRa_Handle_t *handle) {
+    uint8_t reg = LoRa_readRegByte(handle, 0x40); // RegDioMapping1
+    reg &= ~(0xC0); // Clear bits 7 and 6
+    LoRa_writeRegByte(handle, 0x40, reg);
+}
+

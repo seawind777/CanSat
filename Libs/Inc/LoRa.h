@@ -2,8 +2,8 @@
  * @file LoRa.h
  * @brief LoRa module driver header file
  * @author Nate Hunter
- * @date 2025-06-11
- * @version 1.2
+ * @date 2025-06-13
+ * @version 1.3
  */
 
 #ifndef LORA_H
@@ -104,5 +104,7 @@ uint8_t LoRa_Init(LoRa_Handle_t *handle);
 void LoRa_SetConfig(LoRa_Handle_t *handle, LoRa_Config_t *config);
 void LoRa_Transmit(LoRa_Handle_t *handle, void *data, uint8_t len);
 uint8_t LoRa_Receive(LoRa_Handle_t *handle, void *rxData, uint8_t *len);
+void LoRa_EnableDIO0Interrupt(LoRa_Handle_t *handle, uint8_t irqMapping);
+void LoRa_DisableDIO0Interrupt(LoRa_Handle_t *handle);
 
 #endif /* LORA_H */
