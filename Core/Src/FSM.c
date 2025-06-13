@@ -24,6 +24,8 @@ TelemetryRaw imuData;
 TelemetryPacket txPack;
 ControlCommand rxCmd;
 
+gyrobias gbias;
+
 static CircularBuffer cbPress = { .item_size = sizeof(imuData.press), .size = PRESS_BUFFER_LEN };
 
 GNGGA_Parser gps_parser;
@@ -85,11 +87,11 @@ static void init_state(void) {
 			LIS3_Config(LIS_CTRL2, LIS_SCALE_4);
 			LIS3_Config(LIS_CTRL3, LIS_CYCLIC);
 
-			PCA9685_SetPwmFrequency(100000);
-			PCA9685_SetPwm(0, 1000,0);
-			PCA9685_SetPwm(1, 0,4096);
-			PCA9685_SetPwm(3, 4096,0);
-			PCA9685_SetPwm(2, 0,4096);
+
+//			PCA9685_SetPin(0, 0,1);
+//			PCA9685_SetPin(1, 3020,0);
+//			PCA9685_SetPwm(3, 4096,0);
+//			PCA9685_SetPwm(2, 0,4096);
 
 			LSM6_ConfigAG(LSM6_ACCEL_16G | LSM6_CFG_12_5_Hz, LSM6_GYRO_2000DPS | LSM6_CFG_12_5_Hz);
 			CB_Init(&cbPress);
@@ -146,6 +148,9 @@ static void lora_wait_state(void) { // TODO: Unify with rxCmd structure
 					microSD_RemoveFile(SD_FILENAME_WQ);
 					LoRa_Transmit(&lora, "Done\n", 5);
 					break;
+				case '4':
+					LoRa_Transmit(&lora, "Gyro Calib\n", 11);
+					gyroCalibration(&gbias,500);
 				default:
 					break;
 			}
