@@ -19,6 +19,35 @@ void StoreVectAbs(TelemetryRaw *dat) {
 	dat->vectAbs = sqrt(dat->vectAbs);
 }
 
+void gyroCalibration(gyrobias *bias, int iterations) {
+
+    float sumX = 0, sumY = 0, sumZ = 0;
+
+
+    for (int i = 0; i < iterations; i++) {
+
+    	float accelData[3];
+    	float gyroData[3];
+
+    	LSM6_Read(accelData, gyroData);
+
+
+
+        sumX += gyroData[0];
+        sumY +=gyroData[1];
+        sumZ += gyroData[2];
+
+    }
+
+
+    bias->x = sumX / iterations;
+    bias->y = sumY / iterations;
+    bias->z = sumZ / iterations;
+}
+
+
+
+
 void ImuGetAll(TelemetryRaw *imuData) {
 	imuData->time = HAL_GetTick();
 	MS5611_Read(&imuData->temp, &imuData->press);

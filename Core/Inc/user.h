@@ -64,7 +64,9 @@ extern UART_HandleTypeDef huart3;
  * @brief Helper macros for bit-level operations
  * @{
  */
-
+typedef struct {
+    float x, y, z;
+} gyrobias;
 /**
  * @brief Reads a specific bit from a value
  * @param value Source value to read from
@@ -88,6 +90,9 @@ extern UART_HandleTypeDef huart3;
  * @param errCode Error code identifying the failure condition
  * @note This function typically doesn't return as it enters infinite loop
  */
+void gyroCalibration(gyrobias *bias, int iterations);
+
+
 void Error(uint8_t errCode);
 
 /**

@@ -24,6 +24,8 @@ TelemetryRaw imuData;
 TelemetryPacket txPack;
 ControlCommand rxCmd;
 
+gyrobias gbias;
+
 static CircularBuffer cbPress = { .item_size = sizeof(imuData.press), .size = PRESS_BUFFER_LEN };
 
 GNGGA_Parser gps_parser;
@@ -81,18 +83,15 @@ static void init_state(void) {
 
 		if (!errorCode) {
 			MS5611_SetOS(MS56_OSR_4096, MS56_OSR_4096);
+
 			LIS3_Config(LIS_CTRL1, LIS_MODE_HP | LIS_ODR_80);
 			LIS3_Config(LIS_CTRL2, LIS_SCALE_4);
 			LIS3_Config(LIS_CTRL3, LIS_CYCLIC);
+
 			LoRa_EnableDIO0Interrupt(&lora, 0); //Enable RX_Done Interrupt
 
-			PCA9685_SetPwmFrequency(10000U);
-			PCA9685_SetPwm(0, 1000,0);
-			PCA9685_SetPwm(1, 0,4096);
-			PCA9685_SetPwm(3, 4096,0);
-			PCA9685_SetPwm(2, 0,4096);
-
 			LSM6_ConfigAG(LSM6_ACCEL_16G | LSM6_CFG_12_5_Hz, LSM6_GYRO_2000DPS | LSM6_CFG_12_5_Hz);
+
 			CB_Init(&cbPress);
 			GNGGA_Init(&gps_parser, &huart3);
 			imuData.wqAdr = 0;
@@ -147,6 +146,9 @@ static void lora_wait_state(void) { // TODO: Unify with rxCmd structure
 					microSD_RemoveFile(SD_FILENAME_WQ);
 					LoRa_Transmit(&lora, "Done\n", 5);
 					break;
+				case '4':
+					LoRa_Transmit(&lora, "Gyro Calib\n", 11);
+					gyroCalibration(&gbias,500);
 				default:
 					break;
 			}
