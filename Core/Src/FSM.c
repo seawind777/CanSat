@@ -282,9 +282,23 @@ void FSM_Update(void) {
 	}
 }
 
+/**
+ * @brief override weak UART callback
+ */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (huart == &huart3) {
 		GNGGA_UART_IRQHandler(&gps_parser);
 	}
 }
 
+/**
+ * @brief override weak EXTI callback
+ *
+ * @note use it for handle PC5 (LoRa RXDone) Interrupt
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    if (GPIO_Pin == GPIO_PIN_5) {
+    	GPIO_Pin = 0; //TODO: Interrupt handle
+
+    }
+}
