@@ -25,6 +25,7 @@ TelemetryPacket txPack;
 uint8_t rxbuf[32];
 uint8_t rxlen;
 gyrobias gbias;
+static volatile int32_t encoder_count;
 
 static CircularBuffer cbPress = { .item_size = sizeof(imuData.press), .size = PRESS_BUFFER_LEN };
 
@@ -277,16 +278,34 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	}
 }
 
+float ENC_GetAngle(void) {
+	__disable_irq();
+	int32_t cnt = encoder_count;
+	__enable_irq();
+	return cnt * DEGREES_PER_PULSE;
+}
+
 /**
  * @brief override weak EXTI callback
  *
- * @note use it for handle PC5 (LoRa RXDone) Interrupt
+ * @note handle PC5 (LoRa RXDone) and encoder M1_C1 / M1_C2
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    if (GPIO_Pin == GPIO_PIN_5) { //DIO0 LoRa
-		if(LoRa_Receive(&lora, rxbuf, &rxlen)){
+	switch (GPIO_Pin) {
+	case GPIO_PIN_5: // DIO0 LoRa (PC5)
+		if(LoRa_Receive(&lora, rxbuf, &rxlen)) {
 			if(rxlen == sizeof(ControlCommand))
-				MOT_ParseCmd((ControlCommand*)(&rxbuf)); //Calculated On-Air ~15ms
+				MOT_ParseCmd((ControlCommand*)(&rxbuf)); // Calculated On-Air ~15ms
 		}
-    }
+		break;
+
+	case M1_C1_Pin: //TODO: Fix encoders
+		if(HAL_GPIO_ReadPin(M1_C2_GPIO_Port, M1_C2_Pin))
+			encoder_count++; else encoder_count--;
+		break;
+
+	default:
+		break;
+	}
 }
+

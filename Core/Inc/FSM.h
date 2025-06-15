@@ -10,6 +10,9 @@
 #ifndef FSM_H
 #define FSM_H
 
+#define PULSES_PER_REV      2800
+#define DEGREES_PER_PULSE   (360.0f / PULSES_PER_REV)
+
 /**
  * @brief Initialize the Finite State Machine
  * @note This should be called once at system startup
@@ -21,5 +24,7 @@ void FSM_Init(void);
  * @note This should be called repeatedly in the main loop
  */
 void FSM_Update(void);
+
+float ENC_GetAngle(void);
 
 #endif /* FSM_H */
