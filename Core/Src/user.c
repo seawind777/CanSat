@@ -59,7 +59,7 @@ void ImuGetAll(TelemetryRaw *imuData) {
 
 void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_Handle_t *lora, W25Qx_Device *wq) {
 	Telemetry_convertRawToPacket(imuData, tx);
-	LoRa_Transmit(lora, tx, sizeof(TelemetryPacket));
+	LoRa_Transmit(lora, tx, sizeof(TelemetryPacket));  //Calculated On-Air ~15ms
 	FlashLED(LED2_Pin);
 	W25Qx_WriteData(wq, imuData->wqAdr, tx, sizeof(TelemetryPacket));
 	imuData->wqAdr += sizeof(TelemetryPacket);

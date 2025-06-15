@@ -22,8 +22,8 @@ static enum states lastState = LANDING;
 static enum states currentState = INIT;
 TelemetryRaw imuData;
 TelemetryPacket txPack;
-ControlCommand rxCmd;
-
+uint8_t rxbuf[32];
+uint8_t rxlen;
 gyrobias gbias;
 
 static CircularBuffer cbPress = { .item_size = sizeof(imuData.press), .size = PRESS_BUFFER_LEN };
@@ -41,7 +41,7 @@ static LoRa_Config_t loraCfg = {
 		.crcEnabled = 1,
 		.lowDataRateOptimize = 0,
 		.preambleLength = 6,
-		.payloadLength = 56,
+		.payloadLength = sizeof (TelemetryPacket),
 		.txAddr = 255,
 		.rxAddr = 0,
 		.txPower = 0x01
@@ -106,9 +106,7 @@ static void init_state(void) {
  * @brief Handle LoRa waiting state
  */
 static void lora_wait_state(void) { // TODO: Unify with rxCmd structure
-	static uint8_t rxbuf[1];
 	static uint8_t pingFlag = 0;
-	uint8_t rxLen = 0;
 
 	if (currentState != lastState) {
 		lastState = currentState;
@@ -124,7 +122,8 @@ static void lora_wait_state(void) { // TODO: Unify with rxCmd structure
 	else
 		FlashLED(0);
 
-	if (LoRa_Receive(&lora, rxbuf, &rxLen)) {
+	if (rxlen > 0) {
+		rxlen=0;
 		if (rxbuf[0] == '0') {
 			pingFlag = 1;
 			LoRa_Transmit(&lora, "Ping OK\n", 8);
@@ -160,9 +159,6 @@ static void lora_wait_state(void) { // TODO: Unify with rxCmd structure
  * @brief Handle main flight state
  */
 static void main_state(void) {
-	uint8_t rxLen = 0;
-	static uint32_t rx_delay_millis = 0;
-	static uint8_t need_rx_flag = 0;
 	if (currentState != lastState) {
 		lastState = currentState;
 		for (uint8_t i = 0; i < 10; i++) {
@@ -193,24 +189,14 @@ static void main_state(void) {
 			}
 		}
 
+		//TODO: Your job each DATA_PERIOD ms
+
 		/* Save & transmit all */
 		ImuSaveAll(&imuData, &txPack, &lora, &wq);
-
-		/* Set up RX timer */
-		rx_delay_millis = HAL_GetTick();
-		need_rx_flag = 1;
-
 	}
 
-	//TODO: Something
+	//TODO: Your job while in main_state
 
-	/* Wait for RX cmd */
-	if (need_rx_flag && (HAL_GetTick() - rx_delay_millis >= 35)) { //FIXME: Get rid of delay
-		need_rx_flag = 0;
-		if(LoRa_Receive(&lora, &rxCmd, &rxLen)){ //FIXME: Check CMD rx after EJECT
-			MOT_ParseCmd(&rxCmd); //Calculated On-Air ~15ms
-		}
-	}
 }
 
 /**
@@ -297,8 +283,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
  * @note use it for handle PC5 (LoRa RXDone) Interrupt
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    if (GPIO_Pin == GPIO_PIN_5) {
-    	GPIO_Pin = 0; //TODO: Interrupt handle
-
+    if (GPIO_Pin == GPIO_PIN_5) { //DIO0 LoRa
+		if(LoRa_Receive(&lora, rxbuf, &rxlen)){
+			if(rxlen == sizeof(ControlCommand))
+				MOT_ParseCmd((ControlCommand*)(&rxbuf)); //Calculated On-Air ~15ms
+		}
     }
 }
