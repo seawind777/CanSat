@@ -25,7 +25,11 @@ TelemetryPacket txPack;
 uint8_t rxbuf[32];
 uint8_t rxlen;
 gyrobias gbias;
-static volatile int32_t encoder_count;
+
+uint8_t flag_plus = 0;
+uint8_t flag_minus = 0;
+
+int32_t encoder_count;
 
 static CircularBuffer cbPress = { .item_size = sizeof(imuData.press), .size = PRESS_BUFFER_LEN };
 
@@ -299,9 +303,24 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		}
 		break;
 
-	case M1_C1_Pin: //TODO: Fix encoders
+	case M1_C1_Pin: //TODO: Control Logic
 		if(HAL_GPIO_ReadPin(M1_C2_GPIO_Port, M1_C2_Pin))
 			encoder_count++; else encoder_count--;
+
+		if(encoder_count > 4096){
+			PCA9685_SetPin(0, 0, 0);
+			PCA9685_SetPin(1, 1024, 0);
+		}
+
+		if(encoder_count < 4096){
+			PCA9685_SetPin(0, 1024, 0);
+			PCA9685_SetPin(1, 0, 0);
+		}
+
+		if(encoder_count == 4096){
+			PCA9685_SetPin(0, 0, 0);
+			PCA9685_SetPin(1, 0, 0);
+		}
 		break;
 
 	default:
