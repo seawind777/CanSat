@@ -29,7 +29,7 @@ gyrobias gbias;
 uint8_t flag_plus = 0;
 uint8_t flag_minus = 0;
 
-int32_t encoder_count;
+int32_t encoder_count[6];
 
 static CircularBuffer cbPress = { .item_size = sizeof(imuData.press), .size = PRESS_BUFFER_LEN };
 
@@ -282,18 +282,22 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	}
 }
 
-float ENC_GetAngle(void) {
-	__disable_irq();
-	int32_t cnt = encoder_count;
-	__enable_irq();
-	return cnt * DEGREES_PER_PULSE;
-}
+//float ENC_GetAngle(void) {
+//	__disable_irq();
+//	int32_t cnt = encoder_count;
+//	__enable_irq();
+//	return cnt * DEGREES_PER_PULSE;
+//}
 
 /**
  * @brief override weak EXTI callback
  *
  * @note handle PC5 (LoRa RXDone) and encoder M1_C1 / M1_C2
  */
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+//
+//}
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	switch (GPIO_Pin) {
 	case GPIO_PIN_5: // DIO0 LoRa (PC5)
@@ -305,24 +309,40 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
 	case M1_C1_Pin: //TODO: Control Logic
 		if(HAL_GPIO_ReadPin(M1_C2_GPIO_Port, M1_C2_Pin))
-			encoder_count++; else encoder_count--;
+			encoder_count[0]++; else encoder_count[0]--;
+//		if(encoder_count[0] > 1440){
+//					MOT_SetSpeed(1, -20);
+//				}
+//
+//				if(encoder_count[0] < 1440){
+//					MOT_SetSpeed(1, 20);
+//				}
+//
+//				if(encoder_count[0] == 1440){
+//					MOT_SetSpeed(1, 0);
+//				}
+//		PID_Update(0, encoder_count[0]);
 
-		if(encoder_count > 4096){
-			PCA9685_SetPin(0, 0, 0);
-			PCA9685_SetPin(1, 1024, 0);
-		}
-
-		if(encoder_count < 4096){
-			PCA9685_SetPin(0, 1024, 0);
-			PCA9685_SetPin(1, 0, 0);
-		}
-
-		if(encoder_count == 4096){
-			PCA9685_SetPin(0, 0, 0);
-			PCA9685_SetPin(1, 0, 0);
-		}
 		break;
+	case M2_C1_Pin:
+			if(HAL_GPIO_ReadPin(M2_C2_GPIO_Port, M2_C2_Pin))
+				encoder_count[1]++; else encoder_count[1]--;
 
+			break;
+	case M3_C1_Pin:
+			if(HAL_GPIO_ReadPin(M3_C2_GPIO_Port, M3_C2_Pin))
+				encoder_count[2]++; else encoder_count[2]--;
+
+			break;
+	case M4_C1_Pin:
+		if(HAL_GPIO_ReadPin(M4_C2_GPIO_Port, M4_C2_Pin))
+			encoder_count[3]++; else encoder_count[3]--;
+
+		break;
+	case M5_C1_Pin:
+			if(HAL_GPIO_ReadPin(M5_C2_GPIO_Port, M5_C2_Pin))
+				encoder_count[4]++; else encoder_count[4]--;
+			break;
 	default:
 		break;
 	}
