@@ -30,9 +30,14 @@ void MOT_ParseCmd(ControlCommand *rx){
 //				}
 //			}
 
-			MOT_SetSpeed(1, 20);
-			MOT_SetSpeed(2, 20);
-			MOT_SetSpeed(4, 20);
+			PCA9685_SetPin(0, 4096, 0);
+			PCA9685_SetPin(1, 0, 0);
+
+			MOT_SetSpeed(0, 100);
+			MOT_SetSpeed(1, 100);
+			MOT_SetSpeed(2, 100);
+			MOT_SetSpeed(3, 100);
+			MOT_SetSpeed(4, 100);
 
 
 
