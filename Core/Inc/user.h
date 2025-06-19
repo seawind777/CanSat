@@ -27,7 +27,7 @@ extern I2C_HandleTypeDef hi2c1;
 extern SD_HandleTypeDef hsd;
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart3;
-
+extern TIM_HandleTypeDef htim1;
 /**
  * @defgroup user_settings User Configuration Settings
  * @{

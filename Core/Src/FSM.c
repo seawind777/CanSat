@@ -173,6 +173,7 @@ static void main_state(void) {
 		MS5611_Read(&imuData.temp, &imuData.press0);
 		StoreVectAbs(&imuData);
 		imuData.time = HAL_GetTick();
+		HAL_TIM_Base_Start_IT(&htim1);
 	}
 
 	BN220_TryGet(&gps_parser, &imuData);
@@ -294,10 +295,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
  *
  * @note handle PC5 (LoRa RXDone) and encoder M1_C1 / M1_C2
  */
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-//
-//}
-
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	switch (GPIO_Pin) {
 	case GPIO_PIN_5: // DIO0 LoRa (PC5)
@@ -346,5 +343,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	default:
 		break;
 	}
+}
+
+/**
+ * @brief override weak PeriodElapsed callback
+ *
+ * @note handle TIM1 interrupt
+ */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if(htim->Instance == TIM1)
+    {
+        // TODO: Handle TIM1 IT
+    }
 }
 
