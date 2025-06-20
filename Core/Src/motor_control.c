@@ -20,24 +20,24 @@ void MOT_ParseCmd(ControlCommand *rx){
 		if(rx->mode == 1){ //Manual
 			//TODO: Handle manual CMD
 			// Access 1st angle via rx->payload.manual.motor[0]
-//			for (int i =0; i<7; i++){
-//				PID_SetTarget(i, rx->payload.manual.motor[i]*4);
+			for (int i = 0; i<6; i++){
+				PID_SetTarget(i, rx->payload.manual.motor[i]*4);
 //				if (encoder_count[i] > pidStates[i].targetEnc){
 //					MOT_SetSpeed(i, -5);
 //				} else if (encoder_count[i] < pidStates[i
 //														  ].targetEnc){
 //					MOT_SetSpeed(i, 5);
 //				}
-//			}
+			}
 
-			PCA9685_SetPin(0, 4096, 0);
-			PCA9685_SetPin(1, 0, 0);
-
-			MOT_SetSpeed(0, 100);
-			MOT_SetSpeed(1, 100);
-			MOT_SetSpeed(2, 100);
-			MOT_SetSpeed(3, 100);
-			MOT_SetSpeed(4, 100);
+//			PCA9685_SetPin(0, 4096, 0);
+//			PCA9685_SetPin(1, 0, 0);
+//
+//			MOT_SetSpeed(0, 100);
+//			MOT_SetSpeed(1, 100);
+//			MOT_SetSpeed(2, 100);
+//			MOT_SetSpeed(3, 100);
+//			MOT_SetSpeed(4, 100);
 
 
 
@@ -125,7 +125,7 @@ void MOT_SetSpeed(int8_t Channel, int8_t speed){
 }
 
 void PID_SetTarget(int8_t Channel, int16_t target) {
-    if (Channel >= 1 && Channel < 7) {
+    if (Channel >= 0 && Channel < 6) {
     	pidStates[Channel].targetEnc = target;
         pidStates[Channel].active = 1;
         pidStates[Channel].integral = 0;
@@ -133,7 +133,7 @@ void PID_SetTarget(int8_t Channel, int16_t target) {
 }
 
 void PID_Update(int8_t Channel, int16_t currentEnc) {
-    if (Channel < 1 || Channel >= 7 || !pidStates[Channel].active) {
+    if (Channel < 0 || Channel >= 6 || !pidStates[Channel].active) {
         return;
     }
 

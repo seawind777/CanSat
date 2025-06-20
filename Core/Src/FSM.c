@@ -323,7 +323,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		break;
 	case M2_C1_Pin:
 			if(HAL_GPIO_ReadPin(M2_C2_GPIO_Port, M2_C2_Pin))
-				encoder_count[1]++; else encoder_count[1]--;
+				encoder_count[1]--; else encoder_count[1]++;
 
 			break;
 	case M3_C1_Pin:
@@ -354,7 +354,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == TIM1)
     {
-        // TODO: Handle TIM1 IT
+        for (int i = 0; i<6; i++){
+        	PID_Update(i, encoder_count[i]);
+        }
+    	// TODO: Handle TIM1 IT
     }
 }
 
