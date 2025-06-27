@@ -87,6 +87,11 @@ void Error_Handler(void);
 #define M1_C1_Pin GPIO_PIN_15
 #define M1_C1_GPIO_Port GPIOB
 #define M1_C1_EXTI_IRQn EXTI15_10_IRQn
+#define M6_C2_Pin GPIO_PIN_6
+#define M6_C2_GPIO_Port GPIOC
+#define M6_C1_Pin GPIO_PIN_7
+#define M6_C1_GPIO_Port GPIOC
+#define M6_C1_EXTI_IRQn EXTI9_5_IRQn
 #define MS_NSS_Pin GPIO_PIN_9
 #define MS_NSS_GPIO_Port GPIOA
 #define PHOTO_RES_Pin GPIO_PIN_15

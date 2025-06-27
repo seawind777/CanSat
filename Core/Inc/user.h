@@ -38,11 +38,11 @@ extern TIM_HandleTypeDef htim1;
  * @brief Parameters that can be safely modified without system risks
  * @{
  */
-#define TEAM_NAME "SHARAGA_FOREVER!"     ///< Team identifier for logging and comms
+#define TEAM_NAME "Fodiators"     ///< Team identifier for logging and comms
 #define SD_FILENAME "gg.wp"              ///< Primary microSD filename for waypoint data (BIN format)
 #define SD_FILENAME_WQ "gg.wq"           ///< microSD dump filename for diagnostics (BIN format)
-#define DATA_PERIOD 80                   ///< Main data update period in milliseconds
-#define DATA_PERIOD_LND 85               ///< Post-landing data update period in milliseconds
+#define DATA_PERIOD 100                   ///< Main data update period in milliseconds
+#define DATA_PERIOD_LND 100               ///< Post-landing data update period in milliseconds
 #define PRESS_BUFFER_LEN 15              ///< Circular buffer size for landing detection
 #define PRESS_LAND_DELTA 10              ///< Max pressure variation for landing detection (Pa)
 /** @} */
@@ -123,6 +123,7 @@ void ImuSaveAll(TelemetryRaw *imuData, TelemetryPacket *tx, LoRa_Handle_t* lora,
  * @param imuData Pointer to IMU data structure for population
  * @return void Data is returned via the imuData parameter
  */
+void ImuGet(TelemetryRaw *imuData);
 void ImuGetAll(TelemetryRaw *imuData);
 
 /**

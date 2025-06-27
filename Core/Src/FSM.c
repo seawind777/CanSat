@@ -176,7 +176,7 @@ static void main_state(void) {
 		HAL_TIM_Base_Start_IT(&htim1);
 	}
 
-	BN220_TryGet(&gps_parser, &imuData);
+//	BN220_TryGet(&gps_parser, &imuData);
 
 	if (HAL_GetTick() - imuData.time >= DATA_PERIOD) {
 //		HAL_ADC_Start(&hadc1);
@@ -340,8 +340,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 			if(HAL_GPIO_ReadPin(M5_C2_GPIO_Port, M5_C2_Pin))
 				encoder_count[4]++; else encoder_count[4]--;
 			break;
+	case M6_C1_Pin:
+				if(HAL_GPIO_ReadPin(M6_C2_GPIO_Port, M6_C2_Pin))
+					encoder_count[5]--; else encoder_count[5]++;
+				break;
 	default:
-		break;
+			break;
 	}
 }
 
@@ -354,7 +358,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == TIM1)
     {
-        for (int i = 0; i<6; i++){
+//    	ImuGet(&imuData);
+//    	MadgwickAHRSupdate(imuData.gyroData[2]*0.001,imuData.gyroData[0]*0.001, imuData.gyroData[1]*0.001, imuData.accelData[2]*0.00982, imuData.accelData[0]*0.00982, imuData.accelData[1]*0.00982, -1*imuData.magData[2]*0.001, imuData.magData[1]*0.001, imuData.magData[0]*0.001);
+//    	computeAngles();
+    	PID_Speed_Update(imuData.gyroData[2], imuData.gyroData[0], imuData.gyroData[1]);
+    	for (int i = 0; i<6; i++){
         	PID_Update(i, encoder_count[i]);
         }
     	// TODO: Handle TIM1 IT

@@ -290,7 +290,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 839;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 5000;
+  htim1.Init.Period = 2000;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -379,17 +379,17 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, RESET_LORA_Pin|LORA_NSS_Pin|LIS_NSS_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : M5_C1_Pin M4_C1_Pin PC5 */
-  GPIO_InitStruct.Pin = M5_C1_Pin|M4_C1_Pin|GPIO_PIN_5;
+  /*Configure GPIO pins : M5_C1_Pin M4_C1_Pin PC5 M6_C1_Pin */
+  GPIO_InitStruct.Pin = M5_C1_Pin|M4_C1_Pin|GPIO_PIN_5|M6_C1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : M4_C2_Pin */
-  GPIO_InitStruct.Pin = M4_C2_Pin;
+  /*Configure GPIO pins : M4_C2_Pin M6_C2_Pin */
+  GPIO_InitStruct.Pin = M4_C2_Pin|M6_C2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(M4_C2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_ERR_Pin LED1_Pin LED2_Pin MS_NSS_Pin */
   GPIO_InitStruct.Pin = LED_ERR_Pin|LED1_Pin|LED2_Pin|MS_NSS_Pin;

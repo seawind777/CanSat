@@ -45,7 +45,10 @@ void gyroCalibration(gyrobias *bias, int iterations) {
     bias->z = sumZ / iterations;
 }
 
-
+void ImuGet(TelemetryRaw *imuData){
+	LIS3_Read(imuData->magData);
+	LSM6_Read(imuData->accelData, imuData->gyroData);
+}
 
 
 void ImuGetAll(TelemetryRaw *imuData) {

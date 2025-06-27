@@ -101,6 +101,7 @@ void LoRa_Transmit(LoRa_Handle_t *handle, void *data, uint8_t len) {
     /* Clear flag and return to receive mode */
     LoRa_writeRegByte(handle, LORA_REG_IRQ_FLAGS, LORA_FLAG_TX_DONE);
     LoRa_writeRegByte(handle, LORA_REG_OP_MODE, 0x05);
+    LoRa_writeRegByte(handle, LORA_REG_IRQ_FLAGS, LORA_FLAG_RX_DONE);
 }
 
 /**
